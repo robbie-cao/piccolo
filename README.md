@@ -32,11 +32,12 @@ The ISD9160 embeds a CortexTM-M0 core running up to 50 MHz with 145K-byte of non
 
 ## Setup
 
-![](Docs/build_tools.png)
+![](Docs/isd9160_dev_flow.png)
 
 ### Environment
 
 - Keil MDK-ARM or IAR Embedded Workbench
+- VPE - http://www.nuvoton.com/hq/resource-download.jsp?tp_GUID=SW0820160415074337
 
 ### Driver
 
@@ -63,10 +64,7 @@ The ISD9160 embeds a CortexTM-M0 core running up to 50 MHz with 145K-byte of non
   * To output log into UART, remove **SEMIHOST** define in **Project -> Options for Target -> C/C++ -> Preprocessor Symbols**
   * With **SEMIHOST** defined, check log in Keil MDK in debug mode at **View -> Serial Windows -> UART #1**
 
-## Software
-
-### Architecture
-
 ## Reference
 
 - http://www.nuvoton.com/hq/products/application-specific-socs/arm-based-audio/aui-enablers-series/isd9160
+- http://www.nuvoton.com/hq/resource-download.jsp?tp_GUID=HL0120160415081704
