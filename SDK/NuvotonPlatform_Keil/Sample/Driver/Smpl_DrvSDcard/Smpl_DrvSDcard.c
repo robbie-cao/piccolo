@@ -14,7 +14,7 @@
 /*-----------------------------------------------------------------------------------*/
 /* Global variables                                                                  */
 /*-----------------------------------------------------------------------------------*/
-unsigned char ucWrBuff[512],ucRdBuff[512];
+unsigned char ucWrBuff[512],ucRdBuff[512*2];
 
 /*-----------------------------------------------------------------------------------*/
 /* Define functions prototype                                                        */
@@ -94,12 +94,15 @@ int32_t main(void)
 
 	printf("rc=%d\n", (DSTATUS)disk_initialize(0));
 
+#if 0
+////Write 1 sector (512 bytes)
     for(iCnt=0; iCnt<512; iCnt++)
 	    ucWrBuff[iCnt] = iCnt;
 	printf("rc=%u\n", disk_write(0, ucWrBuff, 0, 1));
+#endif
 
 ////Read back
-    printf("rc=%u\n", disk_read(0, ucRdBuff, 0, 1));
+    printf("rc=%u\n", disk_read(0, ucRdBuff, 0, 2));
 
 //    for(iCnt=0; iCnt<512; iCnt++)
 //    {
@@ -107,7 +110,7 @@ int32_t main(void)
 //            printf("Error in Addr[%d]:%02X\n",iCnt,ucRdBuff[iCnt]);
 //    }
 
-	for (ucBuff=(unsigned char*)ucRdBuff, ulOfs = 0; ulOfs < 0x200; ucBuff+=16, ulOfs+=16)
+	for (ucBuff=(unsigned char*)ucRdBuff, ulOfs = 0; ulOfs < 0x400; ucBuff+=16, ulOfs+=16)
     	put_dump(ucBuff, ulOfs, 16);
 
 }
