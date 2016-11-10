@@ -51,6 +51,11 @@
 // Mask for busy Token in R1b response
 #define     BUSY_BIT       0x80
 
+#ifdef DEBUG
+#define LOG     printf
+#else
+#define LOG(fmt, arg...)
+#endif
 
 
 #define BACK_FROM_ERROR { DrvSDCARD_SingleWrite(0xFF);DrvSPI_ClrCS(eDRVSPI_PORT0, eDRVSPI_SS0); return FALSE;}
@@ -224,7 +229,7 @@ uint32_t DrvSDCARD_MMCcmdExec (uint8_t nCmd, uint32_t nArg,uint8_t *pchar, uint3
   	DrvSPI_SetCS(eDRVSPI_PORT0, eDRVSPI_SS0);	// CS = 0
   	DrvSDCARD_SingleWrite(0xFF);
   	DrvSDCARD_SingleWrite((current_command.command_byte | 0x40)&0x7f);
-	printf("CMD:%d,",current_command.command_byte&0x7f);
+	LOG("CMD:%d,",current_command.command_byte&0x7f);
 
   	long_arg.l = nArg;              	// Make argument byte addressable;
                                       		// If current command changes block
@@ -282,7 +287,7 @@ uint32_t DrvSDCARD_MMCcmdExec (uint8_t nCmd, uint32_t nArg,uint8_t *pchar, uint3
 			card_response.b[0] = DrvSDCARD_SingleWrite(0xFF);
       		if(!++loopguard) break;
     	}while((card_response.b[0] & BUSY_BIT));
-		printf("R1:0x%x, counter:%d\n",card_response.b[0],loopguard);
+		LOG("R1:0x%x, counter:%d\n",card_response.b[0],loopguard);
 		if(!loopguard){BACK_FROM_ERROR;}
 		*response=card_response.b[0];
     }
@@ -303,7 +308,7 @@ uint32_t DrvSDCARD_MMCcmdExec (uint8_t nCmd, uint32_t nArg,uint8_t *pchar, uint3
         	if(!++loopguard) break;
       	}while((card_response.b[0] & BUSY_BIT));
 	    card_response.b[1] = DrvSDCARD_SingleWrite(0xFF);
-		printf("R2:0x%x, counter:%d\n",card_response.i,loopguard);
+		LOG("R2:0x%x, counter:%d\n",card_response.i,loopguard);
 		if(!loopguard) { BACK_FROM_ERROR; }
 		*response=card_response.i;
     }else if(current_command.response == R3)
@@ -313,7 +318,7 @@ uint32_t DrvSDCARD_MMCcmdExec (uint8_t nCmd, uint32_t nArg,uint8_t *pchar, uint3
         	card_response.b[0] = DrvSDCARD_SingleWrite(0xFF);
 		    if(!++loopguard) break;
       	} while((card_response.b[0] & BUSY_BIT));
-  		printf("R3:0x%x, counter:%d\n",card_response.b[0],loopguard);
+  		LOG("R3:0x%x, counter:%d\n",card_response.b[0],loopguard);
   	  	if(!loopguard) { BACK_FROM_ERROR; }
       	counter = 0;
       	while(counter <= 3)              // Read next three bytes and store them
@@ -329,7 +334,7 @@ uint32_t DrvSDCARD_MMCcmdExec (uint8_t nCmd, uint32_t nArg,uint8_t *pchar, uint3
         	card_response.b[0] = DrvSDCARD_SingleWrite(0xFF);
 		    if(!++loopguard) break;
       	} while((card_response.b[0] & BUSY_BIT));
-  		printf("R7:0x%x, counter:%d\n",card_response.b[0],loopguard);
+  		LOG("R7:0x%x, counter:%d\n",card_response.b[0],loopguard);
   	  	if(!loopguard) { BACK_FROM_ERROR; }
       	counter = 0;
       	while(counter <= 3)              // Read next three bytes and store them
@@ -472,7 +477,7 @@ uint32_t DrvSDCARD_MMCcmdExec (uint8_t nCmd, uint32_t nArg,uint8_t *pchar, uint3
     if((current_command.command_byte == 9)||(current_command.command_byte == 10)) {
     	current_blklen = old_blklen;
 	}
-	printf("True\n");
+	LOG("True\n");
     return TRUE;
 }
 /*-----------------------------------------------------------------------------------*/
@@ -530,7 +535,7 @@ void DrvSDCARD_MMCflashInit(void)
 
 			DrvSDCARD_MMCcmdExec(READ_OCR,EMPTY,pchar,&response);
 			SDtype=(pchar[0]&0x40)?SDv2|SDBlock:SDv2;
-			printf("SDv2\n");
+			LOG("SDv2\n");
 		}
 	}else
 	{/* SDv1 or MMCv3 */
@@ -546,7 +551,7 @@ void DrvSDCARD_MMCflashInit(void)
 			}while(response!=0);
 			if(!loopguard) return;
 			SDtype=SDv1;	/* SDv1 */
-			printf("SDv1\n");
+			LOG("SDv1\n");
 		} else
 		{
 			loopguard=0;
@@ -558,7 +563,7 @@ void DrvSDCARD_MMCflashInit(void)
 			}while(response!=0);
 			if(!loopguard) return;
 			SDtype=MMCv3;	/* MMCv3 */
-			printf("MMCv3\n");
+			LOG("MMCv3\n");
 		}
 		DrvSDCARD_MMCcmdExec(SET_BLOCKLEN,(uint32_t)PHYSICAL_BLOCK_SIZE,EMPTY,&response);
 	}
@@ -567,12 +572,12 @@ void DrvSDCARD_MMCflashInit(void)
 
   	if(response==0)
 	{
-    	printf("Change speed:");
-    	for(i=0;i<16;i++) {	printf("0x%X ",pchar[i]);}
+    	LOG("Change speed:");
+    	for(i=0;i<16;i++) {	LOG("0x%X ",pchar[i]);}
 
   	} else {
-    	printf("CARD STATUS 0x%X:\n",response);
-  		for(i=0;i<16;i++) {	printf("0x%X ",pchar[i]);}
+    	LOG("CARD STATUS 0x%X:\n",response);
+  		for(i=0;i<16;i++) {	LOG("0x%X ",pchar[i]);}
     	LogicSector=0;
     	return;
   	}
@@ -589,7 +594,7 @@ void DrvSDCARD_MMCflashInit(void)
   		c_mult = (((pchar[9] & 0x03) << 1) | ((pchar[10] & 0x80) >> 7));
 		LogicSector=(c_size+1)*(1 << (c_mult+2))*(bl_len/512);
   	}
-		printf("\nLogicSector:%d, PHYSICAL_SIZE:%dMB\n",LogicSector,(LogicSector/2/1024));
+		LOG("\nLogicSector:%d, PHYSICAL_SIZE:%dMB\n",LogicSector,(LogicSector/2/1024));
 
   	loopguard = 0;
   	while((DrvSDCARD_MMCcmdExec(READ_SINGLE_BLOCK,0,0,&response)==FALSE)) {
@@ -627,11 +632,11 @@ uint32_t DrvSDCARD_Open(void)
 	DrvSPI_SetClock(eDRVSPI_PORT0,300000,300000);
     DrvSDCARD_MMCflashInit();
     DrvSYS_Delay(1000);
-	DrvSPI_SetClock(eDRVSPI_PORT0,12000000,12000000);
+	DrvSPI_SetClock(eDRVSPI_PORT0,24000000,24000000);
 
 	if (Is_Initialized)
 	{
-		printf("SDCARD INIT OK\n\n");
+		LOG("SDCARD INIT OK\n\n");
 		return E_SUCCESS;
 	}
 	else
