@@ -29,8 +29,8 @@ uint32_t TOTAL_PCM_COUNT;  		// = PCM_LENGTH
 #define AudioBufferSize     512
 __align(4) int16_t AudioBuffer[2][AudioBufferSize];
 uint32_t AudioSampleCount,PDMA1CallBackCount,AudioDataAddr,BufferEmptyAddr,BufferReadyAddr;
-BOOL	PCMPlaying,BufferEmpty,PDMA1Done;
-uint32_t	AudioDataCount,u32DataSector;
+BOOL	PCMPlaying,BufferEmpty = TRUE,PDMA1Done;
+uint32_t	AudioDataCount,u32DataSector = 0;
 
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -101,6 +101,41 @@ void SysTimerDelay(uint32_t us)
 /*---------------------------------------------------------------------------------------------------------*/
 void PDMA1forDPWM(void)
 {
+#if 1
+    STR_PDMA_T sPDMA;
+
+    sPDMA.sSrcAddr.u32Addr 			= BufferReadyAddr;
+    sPDMA.sDestAddr.u32Addr 		= (uint32_t)&DPWM->FIFO;
+    sPDMA.u8Mode 					= eDRVPDMA_MODE_MEM2APB;;
+    sPDMA.u8TransWidth 				= eDRVPDMA_WIDTH_16BITS;
+    sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_WRAPAROUND;
+    //sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_INCREMENTED;
+    sPDMA.sDestAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_FIXED;
+    sPDMA.u8WrapBcr				 	= eDRVPDMA_WRA_WRAP_HALF_INT;; 		//Interrupt condition set fro Half buffer & buffer end
+    //sPDMA.i32ByteCnt = AUDIOBUFFERSIZE * 2;	   	//Full MIC buffer length (byte)
+    sPDMA.i32ByteCnt = AudioBufferSize * 4;	   	//Full MIC buffer length (byte), Wrap around
+    DrvPDMA_Open(eDRVPDMA_CHANNEL_1, &sPDMA);
+
+    // PDMA Setting
+    //PDMA_GCR->PDSSR.ADC_RXSEL = eDRVPDMA_CHANNEL_2;
+    DrvPDMA_SetCHForAPBDevice(
+            eDRVPDMA_CHANNEL_1,
+            eDRVPDMA_DPWM,
+            eDRVPDMA_WRITE_APB
+            );
+
+    // Enable DPWM DMA
+    DrvDPWM_EnablePDMA();
+    // Enable INT
+    DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_WAR); 	  		//For WARPROUND
+    //DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD );
+    // Install Callback function
+    DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_WAR, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );     //For Wrap
+    //DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );
+    DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_1);
+
+
+#else
 	STR_PDMA_T sPDMA;
 
 	sPDMA.sSrcAddr.u32Addr 			= BufferReadyAddr;
@@ -130,6 +165,7 @@ void PDMA1forDPWM(void)
 	DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_1);
 
 	PDMA1Done=FALSE;
+#endif
 }
 
 
@@ -151,6 +187,7 @@ void PDMA1_Callback()
 
 
 	PDMA1CallBackCount++;
+#if 0
 	if (BufferEmpty == FALSE)
     {
         PDMA1forDPWM();
@@ -160,8 +197,9 @@ void PDMA1_Callback()
 		printf("Late to copy audio data to buffer for PDMA\n");
 		PDMA1Done=TRUE;
 	}
+#endif
 
-	BufferEmpty=TRUE;
+	BufferEmpty = TRUE;
 }
 
 
@@ -190,8 +228,9 @@ void CopySoundData()
 
 void CopySdSoundData()
 {
-    u32DataSector = AudioDataAddr / SD_SECTOR_SIZE;
-    disk_read (0, (unsigned char *)AudioBuffer, u32DataSector, 1);
+    //u32DataSector = AudioDataAddr / SD_SECTOR_SIZE;
+    disk_read (0, (unsigned char *)BufferEmptyAddr, u32DataSector, 2);
+    u32DataSector += 2;
 
     AudioSampleCount = AudioSampleCount + AudioBufferSize;
     AudioDataAddr = AudioDataAddr + (AudioBufferSize*2);
@@ -226,7 +265,7 @@ void PlaySound(uint32_t DataAddr)
 
 void PlaySdSound(uint32_t DataSdAddr)
 {
-    InitialDPWM(44100);
+    InitialDPWM(16000);
 
     AudioDataAddr = DataSdAddr;
     PCMPlaying = TRUE;
@@ -278,7 +317,7 @@ int32_t main (void)
         goto Error;
     }
 
-#if 1
+#if 0
     // Test SD card reading speed
     {
         uint32_t u32Start = 0;
@@ -287,7 +326,7 @@ int32_t main (void)
 
         DrvTIMER_Open(TMR0, 1000, PERIODIC_MODE);
         u32Start = DrvTIMER_GetTicks(TMR0);
-        for (i = 0; i < 1024*2; i++) {
+        for (i = 0; i < 1024; i++) {
             disk_read (0, (unsigned char *)AudioBuffer, i, 1);
         }
         u32End = DrvTIMER_GetTicks(TMR0);
@@ -330,11 +369,14 @@ int32_t main (void)
             CopySdSoundData();
             BufferEmpty = FALSE;
         }
+        //PlaySdSound(AudioDataAddr);
 
+#if 0
         if ((PDMA1Done == TRUE) && (BufferEmpty == FALSE))
         {
             PDMA1forDPWM();
         }
+#endif
 
     }
 #endif
