@@ -105,7 +105,7 @@ void PlayMessage(uint8_t u8MessageNo)
 /*---------------------------------------------------------------------------------------------------------*/
 int32_t main(void)
 {						
-uint8_t	u8MessNo;
+uint8_t	u8MessNo = 60;
 	InitialSystemClock();
     
 	//UartInit();
@@ -114,7 +114,7 @@ uint8_t	u8MessNo;
 		goto Error;
 
 	bPCMPlaying=FALSE;
-	u8MessNo=0;
+	u8MessNo=60;
 	//DrvTIMER_Init();
 	while(1)
 	{
@@ -123,8 +123,10 @@ uint8_t	u8MessNo;
 		else
 		{
 			PlayClose();
+            #if 0
 			if(u8MessNo==TOTAL_VP_COUNT)
 				u8MessNo=0;
+            #endif
 			PlayMessage(u8MessNo);
 			u8MessNo++;
 		}

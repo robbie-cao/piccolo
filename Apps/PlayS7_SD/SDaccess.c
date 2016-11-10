@@ -29,6 +29,7 @@ DSTATUS disk_initialize (unsigned char ucDrv)
 {
 	DSTATUS sta;
 
+#if 0
 //////SD_PWR
 	//DrvGPIO_InitFunction(FUNC_GPIO);
 	DrvGPIO_Open(GPB,1,IO_OUTPUT);
@@ -38,6 +39,7 @@ DSTATUS disk_initialize (unsigned char ucDrv)
     DrvGPIO_Open(GPB,0,IO_INPUT);
 	while((GPIOB->PIN&0x0001)!=0);
 	RoughDelay(100000);
+#endif
 
 	if(DrvSDCARD_Open() == E_SUCCESS)
 	{	
