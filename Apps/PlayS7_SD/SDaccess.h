@@ -25,9 +25,9 @@ typedef enum {
 
 DSTATUS disk_initialize (unsigned char ucDrv);
 DSTATUS disk_status (unsigned char ucDrv);
-DRESULT disk_read (unsigned char ucDrv,	unsigned char *ucBuff, 
+DRESULT disk_read (unsigned char ucDrv,	unsigned char *ucBuff,
                    unsigned long ulSector, unsigned char ucCount);
-DRESULT disk_write (unsigned char ucDrv, const unsigned char *ucBuff,	
+DRESULT disk_write (unsigned char ucDrv, const unsigned char *ucBuff,
 					unsigned long ulSector,	unsigned char ucCount);
 
 

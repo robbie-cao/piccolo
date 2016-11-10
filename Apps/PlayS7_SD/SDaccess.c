@@ -42,7 +42,7 @@ DSTATUS disk_initialize (unsigned char ucDrv)
 #endif
 
 	if(DrvSDCARD_Open() == E_SUCCESS)
-	{	
+	{
 		sta = 	RES_OK;
 		printf("SDCard Open success\n");
 	}
@@ -61,9 +61,9 @@ DSTATUS disk_initialize (unsigned char ucDrv)
 /*-----------------------------------------------------------------------*/
 /* ucDrv : Physical drive nmuber */
 DSTATUS disk_status (unsigned char ucDrv)
-{   
+{
 	DSTATUS sta1=STA_OK;
-	if (ucDrv) 
+	if (ucDrv)
 		sta1 =   STA_NOINIT;
 	return sta1;
 }
@@ -73,32 +73,32 @@ DSTATUS disk_status (unsigned char ucDrv)
 /*-----------------------------------------------------------------------*/
 /* Read Sector(s)                                                        */
 /*-----------------------------------------------------------------------*/
-/* ucDrv :   Physical drive nmuber (0) */                     
-/* ucBuff:   Pointer to the data buffer to store read data */ 
-/* ulSector: Start sector number (LBA) */                         
-/* ucCount : Sector count (1..255) */                         
-DRESULT disk_read (unsigned char ucDrv,	unsigned char *ucBuff, 
+/* ucDrv :   Physical drive nmuber (0) */
+/* ucBuff:   Pointer to the data buffer to store read data */
+/* ulSector: Start sector number (LBA) */
+/* ucCount : Sector count (1..255) */
+DRESULT disk_read (unsigned char ucDrv,	unsigned char *ucBuff,
                    unsigned long ulSector, unsigned char ucCount)
 {
 	DRESULT res;
 	uint32_t size;
-	
-  	if (ucDrv) 
+
+  	if (ucDrv)
   	{
-		res = (DRESULT)STA_NOINIT;	
+		res = (DRESULT)STA_NOINIT;
 	    return res;
 	}
 
 /*
     if(ucCount==0||ucCount>=2)
-   	{	 
+   	{
 		res =   (DRESULT)STA_NOINIT;
 		return res;
 	}
 */
 
     size = ucCount*512;
-	DrvSDCARD_SpiRead(ulSector, size, ucBuff);			
+	DrvSDCARD_SpiRead(ulSector, size, ucBuff);
 	res =RES_OK;	/* Clear STA_NOINIT */;
 
 	return res;
@@ -109,24 +109,24 @@ DRESULT disk_read (unsigned char ucDrv,	unsigned char *ucBuff,
 /*-----------------------------------------------------------------------*/
 /* Write Sector(s)                                                       */
 /*-----------------------------------------------------------------------*/
-/* Physical drive nmuber (0) */        
+/* Physical drive nmuber (0) */
 /* Pointer to the data to be written */
-/* Start sector number (LBA) */        
-/* Sector count (1..255) */            
-DRESULT disk_write (unsigned char ucDrv, const unsigned char *ucBuff,	
+/* Start sector number (LBA) */
+/* Sector count (1..255) */
+DRESULT disk_write (unsigned char ucDrv, const unsigned char *ucBuff,
 					unsigned long ulSector,	unsigned char ucCount)
 {
-	DRESULT  res;	
+	DRESULT  res;
     uint32_t size;
 
  	if (ucDrv) {
-		res = (DRESULT)STA_NOINIT;	
+		res = (DRESULT)STA_NOINIT;
 		return res;
 	}
 
 /*
     if(ucCount==0||ucCount>=2)
-	{	 
+	{
 		res = (DRESULT)  STA_NOINIT;
 		return res;
 	}

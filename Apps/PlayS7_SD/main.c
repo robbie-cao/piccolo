@@ -41,7 +41,7 @@ void SysTimerDelay(uint32_t us)
 /*---------------------------------------------------------------------------------------------------------*/
 void InitialSystemClock(void)
 {
-    /* Unlock the protected registers */	
+    /* Unlock the protected registers */
 	UNLOCKREG();
 
 	/* HCLK clock source. */
@@ -50,7 +50,7 @@ void InitialSystemClock(void)
 	LOCKREG();
 
 	/* HCLK clock frequency = HCLK clock source / (HCLK_N + 1) */
-	DrvSYS_SetClockDivider(E_SYS_HCLK_DIV, 0); 
+	DrvSYS_SetClockDivider(E_SYS_HCLK_DIV, 0);
 }
 
 
@@ -66,7 +66,7 @@ void UartInit(void)
 
 	/* Enable UART clock */
     SYSCLK->APBCLK.UART0_EN = 1;
- 
+
     /* Data format */
     UART0->LCR.WLS = 3;
 
@@ -83,7 +83,7 @@ void Delay(uint16_t	 u16Sec)
 {
 	uint32_t u32Start = 0;
 	uint32_t u32End = 0;
-	
+
 	DrvTIMER_Open(TMR0,1000,PERIODIC_MODE);
 	u32Start = DrvTIMER_GetTicks(TMR0);
 	while(	u32End - u32Start < u16Sec*1000)
@@ -96,7 +96,7 @@ void Delay(uint16_t	 u16Sec)
 
 void PlayMessage(uint8_t u8MessageNo)
 {
-	PlaySdG722(u8MessageNo);	  
+	PlaySdG722(u8MessageNo);
 }
 
 
@@ -104,10 +104,10 @@ void PlayMessage(uint8_t u8MessageNo)
 /* MAIN function                                                                           	   			   */
 /*---------------------------------------------------------------------------------------------------------*/
 int32_t main(void)
-{						
+{
 uint8_t	u8MessNo = 60;
 	InitialSystemClock();
-    
+
 	//UartInit();
 
 	if((DSTATUS)disk_initialize(0)!=0)
@@ -137,6 +137,6 @@ Error:
 	while(1);
 
 
-}	
+}
 
 

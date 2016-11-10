@@ -20,7 +20,7 @@
 
 
 //--------------------
-// Buffer and global variables for playing 
+// Buffer and global variables for playing
 uint32_t TotalG722Size;  		// Encoded Siren7 data size
 uint32_t	u32BufferAddr0, u32BufferAddr1;
 uint8_t		u8Buf_CurDataIndex, u8Buf_RemainedCount, u8Buf_ReadStartIndex;
@@ -70,36 +70,36 @@ void InitialDPWM(uint32_t u32SampleRate)
 /*---------------------------------------------------------------------------------------------------------*/
 void PDMA1forDPWM(void)
 {
-	STR_PDMA_T sPDMA;  
+	STR_PDMA_T sPDMA;
 
-	sPDMA.sSrcAddr.u32Addr 			= BufferReadyAddr; 
+	sPDMA.sSrcAddr.u32Addr 			= BufferReadyAddr;
 	sPDMA.sDestAddr.u32Addr 		= (uint32_t)&DPWM->FIFO;
 	sPDMA.u8Mode 					= eDRVPDMA_MODE_MEM2APB;;
 	sPDMA.u8TransWidth 				= eDRVPDMA_WIDTH_16BITS;
 	sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_WRAPAROUND;
-	//sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_INCREMENTED; 
-	sPDMA.sDestAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_FIXED;  
+	//sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_INCREMENTED;
+	sPDMA.sDestAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_FIXED;
 	sPDMA.u8WrapBcr				 	= eDRVPDMA_WRA_WRAP_HALF_INT;; 		//Interrupt condition set fro Half buffer & buffer end
     //sPDMA.i32ByteCnt = AUDIOBUFFERSIZE * 2;	   	//Full MIC buffer length (byte)
 	sPDMA.i32ByteCnt = AUDIOBUFFERSIZE * 4;	   	//Full MIC buffer length (byte), Wrap around
     DrvPDMA_Open(eDRVPDMA_CHANNEL_1, &sPDMA);
 
-	// PDMA Setting 
+	// PDMA Setting
     //PDMA_GCR->PDSSR.ADC_RXSEL = eDRVPDMA_CHANNEL_2;
 	DrvPDMA_SetCHForAPBDevice(
-    	eDRVPDMA_CHANNEL_1, 
+    	eDRVPDMA_CHANNEL_1,
     	eDRVPDMA_DPWM,
-    	eDRVPDMA_WRITE_APB    
+    	eDRVPDMA_WRITE_APB
 	);
 
 	// Enable DPWM DMA
 	DrvDPWM_EnablePDMA();
-	// Enable INT 
-	DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_WAR); 	  		//For WARPROUND  
-	//DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD ); 
-	// Install Callback function    
+	// Enable INT
+	DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_WAR); 	  		//For WARPROUND
+	//DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD );
+	// Install Callback function
 	DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_WAR, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );     //For Wrap
-	//DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback ); 	
+	//DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );
 	DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_1);
 
 }
@@ -143,7 +143,7 @@ uint32_t	u32LoopCount;
 	{
 		*Addr2++ = *Addr1++;
 	}
-}  
+}
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Copy Data from SPI flash to SRAM                                                                        */
@@ -160,16 +160,16 @@ void CopySdSoundData()
 		u8Buf_CurDataIndex = 0;
 	}
 
-	//g722DecDecode(&dctl, (uint16_t *)SpiDataBuffer, (signed short *)BufferEmptyAddr); 
-	LibS7Decode(&sEnDeCtl, &sS7Dec_Ctx, (uint16_t *)&SdBuff[u8Buf_CurDataIndex], (signed short *)BufferEmptyAddr); 
-	
+	//g722DecDecode(&dctl, (uint16_t *)SpiDataBuffer, (signed short *)BufferEmptyAddr);
+	LibS7Decode(&sEnDeCtl, &sS7Dec_Ctx, (uint16_t *)&SdBuff[u8Buf_CurDataIndex], (signed short *)BufferEmptyAddr);
+
 	u8Buf_CurDataIndex= u8Buf_CurDataIndex+(COMPBUFSIZE/4);
 	u8Buf_RemainedCount= u8Buf_RemainedCount-(COMPBUFSIZE/4);
 	AudioDataCount= AudioDataCount+COMPBUFSIZE;
 
-	if (AudioDataCount >= TotalG722Size) 
+	if (AudioDataCount >= TotalG722Size)
 		u8LastTwoBufferCount=0;
-	
+
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -209,7 +209,7 @@ void PlaySdSound(uint32_t DataSdAddr)
 	u8Buf_CurDataIndex=(DataSdAddr%SD_SECTOR_SIZE)/4;		//Data start index for decode
 	u8Buf_RemainedCount=128-u8Buf_CurDataIndex;				//Remained buffer data cound in buffer
 	disk_read (0, (unsigned char *)SdBuff, u32DataSector, 1);
-	
+
 	BufferEmptyAddr= u32BufferAddr0;
 	CopySdSoundData();
 	BufferReadyAddr= u32BufferAddr0;
@@ -228,7 +228,7 @@ uint32_t u32Addr0, u32Addr1, u32BufferIndex;
 	u32AudPointer = S7DATA_BASE_ADDR_ON_SD + 8*(AudIndex+1);
 	u32SectorNum = u32AudPointer/SD_SECTOR_SIZE;  				//Get the sector number which has the AudIndex header
 	u32BufferIndex = (u32AudPointer%SD_SECTOR_SIZE)/4;			//Get the AudIndex header offset, unit word index in buffer	SdBuff
-	
+
 	disk_read (0, (unsigned char *)SdBuff, u32SectorNum, 1);
 	u32Addr0 = SdBuff[u32BufferIndex];
 
@@ -239,7 +239,7 @@ uint32_t u32Addr0, u32Addr1, u32BufferIndex;
 	}
 	else
 		u32Addr1 = SdBuff[u32BufferIndex+2];	//Each AudioIndex has a header of two words
-	TotalG722Size = u32Addr1 - u32Addr0;		  	
+	TotalG722Size = u32Addr1 - u32Addr0;
 	return(u32Addr0);
 }
 
@@ -261,7 +261,7 @@ void PlaySdG722(uint16_t AudIndex)
     LibS7Init(&sEnDeCtl,S7BITRATE,S7BANDWIDTH);
     LibS7DeBufReset(sEnDeCtl.frame_size,&sS7Dec_Ctx);
 
-   
+
     DrvPDMA_Init();			//PDMA initialization
 	//UNLOCKREG();
 
@@ -269,12 +269,12 @@ void PlaySdG722(uint16_t AudIndex)
 // Based on the header structure of VPE output file to get sound stream address and length
 	u32StartAddr = GetSdAudioSizeStartAddr(AudIndex)+S7DATA_BASE_ADDR_ON_SD;
 	if(TotalG722Size>COMPBUFSIZE*2)
-	{ 	 
+	{
 		PlaySdSound(u32StartAddr);
 		PlayLoop();
 	}
 
-				
+
 }
 
 
