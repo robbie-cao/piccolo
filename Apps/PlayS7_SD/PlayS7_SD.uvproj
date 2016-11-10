@@ -345,7 +345,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>inc;.\;..\..\..\..\HW;..\..\..\..\CMSIS\CM0\CoreSupport;..\..\..\..\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx;..\..\..\Include;..\..\..\Include\Driver;ASR\inc,Fea\inc,Vite\inc</IncludePath>
+              <IncludePath>inc;.\;..\..\SDK\CMSIS\CM0\CoreSupport;..\..\SDK\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx;..\..\SDK\NuvotonPlatform_Keil\Include;..\..\SDK\NuvotonPlatform_Keil\Include\Driver;ASR\inc,Fea\inc,Vite\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -388,12 +388,12 @@
             <File>
               <FileName>core_cm0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\CMSIS\CM0\CoreSupport\core_cm0.c</FilePath>
+              <FilePath>..\..\SDK\CMSIS\CM0\CoreSupport\core_cm0.c</FilePath>
             </File>
             <File>
               <FileName>system_ISD9xx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\CMSIS\CM0\DeviceSupport\NUVOTON\ISD91xx\system_ISD9xx.c</FilePath>
+              <FilePath>..\..\SDK\CMSIS\CM0\DeviceSupport\NUVOTON\ISD91xx\system_ISD9xx.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -403,7 +403,7 @@
             <File>
               <FileName>boot_ISD9xx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx\boot_ISD9xx.c</FilePath>
+              <FilePath>..\..\SDK\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx\boot_ISD9xx.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -428,62 +428,62 @@
             <File>
               <FileName>retarget.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\retarget.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\retarget.c</FilePath>
             </File>
             <File>
               <FileName>DrvSYS.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvSYS.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvSYS.c</FilePath>
             </File>
             <File>
               <FileName>DrvUART.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvUART.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvUART.c</FilePath>
             </File>
             <File>
               <FileName>DrvDPWM.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvDPWM.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvDPWM.c</FilePath>
             </File>
             <File>
               <FileName>DrvGPIO.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvGPIO.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvGPIO.c</FilePath>
             </File>
             <File>
               <FileName>DrvPDMA.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvPDMA.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvPDMA.c</FilePath>
             </File>
             <File>
               <FileName>SemiHost_Keil.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\Lib\SemiHost_Keil.lib</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Lib\SemiHost_Keil.lib</FilePath>
             </File>
             <File>
               <FileName>DrvADC.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvADC.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvADC.c</FilePath>
             </File>
             <File>
               <FileName>DrvTimer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvTimer.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvTimer.c</FilePath>
             </File>
             <File>
               <FileName>DrvSDCard.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvSDCard.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvSDCard.c</FilePath>
             </File>
             <File>
               <FileName>LibSiren7.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\Lib\LibSiren7.lib</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Lib\LibSiren7.lib</FilePath>
             </File>
             <File>
               <FileName>DrvSPI.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvSPI.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvSPI.c</FilePath>
             </File>
           </Files>
         </Group>
