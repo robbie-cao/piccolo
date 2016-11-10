@@ -13,6 +13,7 @@
 #include "Driver\DrvGPIO.h"
 #include "Driver\DrvSYS.h"
 #include "Driver\DrvFMC.h"
+#include "Driver\DrvTimer.h"
 
 #include "SDaccess.h"
 
@@ -150,7 +151,7 @@ void PDMA1_Callback()
 
 
 	PDMA1CallBackCount++;
-	if (BufferEmpty==FALSE)
+	if (BufferEmpty == FALSE)
     {
         PDMA1forDPWM();
     }
@@ -264,6 +265,8 @@ int32_t main (void)
 	/* Set UART Configuration */
     UartInit();
 
+    DrvTIMER_Init();
+
     printf("+-------------------------------------------------------------------------+\n");
     printf("|       Playing 8K sampling	PCM										      |\n");
     printf("+-------------------------------------------------------------------------+\n");
@@ -274,6 +277,27 @@ int32_t main (void)
     {
         goto Error;
     }
+
+#if 1
+    // Test SD card reading speed
+    {
+        uint32_t u32Start = 0;
+        uint32_t u32End = 0;
+        uint32_t i = 0;
+
+        DrvTIMER_Open(TMR0, 1000, PERIODIC_MODE);
+        u32Start = DrvTIMER_GetTicks(TMR0);
+        for (i = 0; i < 1024*2; i++) {
+            disk_read (0, (unsigned char *)AudioBuffer, i, 1);
+        }
+        u32End = DrvTIMER_GetTicks(TMR0);
+        DrvTIMER_Close(TMR0);
+        printf("Read:\n");
+        printf("Total Sector: %d\n", i);
+        printf("Start Time  : %d\n", u32Start);
+        printf("End Time    : %d\n", u32End);
+    }
+#endif
 
     DrvPDMA_Init();			//PDMA initialization
 	UNLOCKREG();
@@ -306,7 +330,6 @@ int32_t main (void)
             CopySdSoundData();
             BufferEmpty = FALSE;
         }
-
 
         if ((PDMA1Done == TRUE) && (BufferEmpty == FALSE))
         {
