@@ -64,6 +64,59 @@ The ISD9160 embeds a CortexTM-M0 core running up to 50 MHz with 145K-byte of non
   * To output log into UART, remove **SEMIHOST** define in **Project -> Options for Target -> C/C++ -> Preprocessor Symbols**
   * With **SEMIHOST** defined, check log in Keil MDK in debug mode at **View -> Serial Windows -> UART #1**
 
+## Help Tools
+
+### Check Audio File Info
+
+```
+$ soxi file.mp3
+$ soxi file.wav
+
+$ ffmpeg -i file.mp3
+$ ffmpeg -i file.wav
+
+$ ffprobe -i file.wav/mp3
+$ ffprobe -show_streams -select_streams a file.wav/mp3
+```
+
+> http://stefaanlippens.net/audio_conversion_cheat_sheet/
+
+### Convert Audio File
+
+```
+# mp3 -> wav
+$ ffmpeg -i input.mp3 output.wav
+$ ffmpeg -i input.mp3 -acodec pcm_s16le -ar 44100 output.wav    # sample rate = 44.1K
+$ ffmpeg -i input.mp3 -acodec pcm_s16le -ac 1 output.wav        # 1 channel (mono)
+
+# stereo to mono
+$ ffmpeg -i input.wav -ac 1 output.wav
+$ ffmpeg -i input.mp3 -ac 1 output.wav
+
+# sample rate
+$ ffmpeg -i input.wav -ar 32000 output.wav                      # sample rate = 32K
+$ ffmpeg -i input.wav -ar 16000 output.wav                      # sample rate = 16K
+
+# raw
+$ ffmpeg -i input.flv -f s16le -acodec pcm_s16le output.raw
+$ ffmpeg -i input.mp3 -f s16le -acodec pcm_s16le output.raw
+$ ffmpeg -i input.wav -f s16le -acodec pcm_s16le output.raw
+```
+
+> http://superuser.com/questions/675342/convert-mp3-to-wav-using-ffmpeg-for-vbr
+
+> https://trac.ffmpeg.org/wiki/audio%20types
+
+### Flash Audio Data to SD Card
+
+```
+# combile two raw into one
+$ cat input1.raw input2.raw > output.raw
+
+# program raw data to sd card
+$ sudo dd if=output.raw of=/dev/sdX                             # DANGEROUS, double check X before execution!
+```
+
 ## Reference
 
 - http://www.nuvoton.com/hq/products/application-specific-socs/arm-based-audio/aui-enablers-series/isd9160
