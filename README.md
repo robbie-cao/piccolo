@@ -83,6 +83,8 @@ $ ffprobe -show_streams -select_streams a file.wav/mp3
 
 ### Convert Audio File
 
+#### Using `ffmpeg`
+
 ```
 # mp3 -> wav
 $ ffmpeg -i input.mp3 output.wav
@@ -106,6 +108,25 @@ $ ffmpeg -i input.wav -f s16le -acodec pcm_s16le output.raw
 > http://superuser.com/questions/675342/convert-mp3-to-wav-using-ffmpeg-for-vbr
 
 > https://trac.ffmpeg.org/wiki/audio%20types
+
+#### Using SoX
+
+```
+# Minimal conversion example
+sox input.mp3 output.wav
+
+# Convert to mono (two possibilities: by specifying output format or with the 'channels' effect.
+sox input.mp3 -c 1 output.wav
+sox input.mp3 output.wav channels 1
+
+# Change sample rate (again two possibilities)
+sox input.mp3 -r 8000 output.wav
+sox input.mp3 output.wav rate 8000
+# Newer versions of SoX also support
+sox input.mp3 output.wav rate 8k
+```
+
+> http://stefaanlippens.net/audio_conversion_cheat_sheet/
 
 ### Flash Audio Data to SD Card
 
