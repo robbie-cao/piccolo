@@ -20,14 +20,8 @@
 #define BASE_ADDR_ON_SD	0	  	//Should be multiple of 8, it's better on the start of a sector (multiple of 512)
 #define SD_SECTOR_SIZE	512	//unit: byte
 
-//#include "PCM.h"
-//extern const int16_t i16PCMData[PCM_LENGTH];
-
-//extern uint32_t u32AudioDataBegin, u32AudioDataEnd;
-uint32_t TOTAL_PCM_COUNT;  		// = PCM_LENGTH
-
-#define AudioBufferSize     512
-__align(4) int16_t AudioBuffer[2][AudioBufferSize];
+#define AUDIOBUFFERSIZE     512
+__align(4) int16_t AudioBuffer[2][AUDIOBUFFERSIZE];
 uint32_t AudioSampleCount,PDMA1CallBackCount,AudioDataAddr,BufferEmptyAddr,BufferReadyAddr;
 BOOL	PCMPlaying,BufferEmpty = TRUE,PDMA1Done;
 uint32_t	AudioDataCount,u32DataSector = 0;
@@ -101,7 +95,6 @@ void SysTimerDelay(uint32_t us)
 /*---------------------------------------------------------------------------------------------------------*/
 void PDMA1forDPWM(void)
 {
-#if 1
     STR_PDMA_T sPDMA;
 
     sPDMA.sSrcAddr.u32Addr 			= BufferReadyAddr;
@@ -109,11 +102,15 @@ void PDMA1forDPWM(void)
     sPDMA.u8Mode 					= eDRVPDMA_MODE_MEM2APB;;
     sPDMA.u8TransWidth 				= eDRVPDMA_WIDTH_16BITS;
     sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_WRAPAROUND;
+    // FIXME:
+    // INCREMENTED or WRAPPAROUND?
     //sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_INCREMENTED;
     sPDMA.sDestAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_FIXED;
     sPDMA.u8WrapBcr				 	= eDRVPDMA_WRA_WRAP_HALF_INT;; 		//Interrupt condition set fro Half buffer & buffer end
     //sPDMA.i32ByteCnt = AUDIOBUFFERSIZE * 2;	   	//Full MIC buffer length (byte)
-    sPDMA.i32ByteCnt = AudioBufferSize * 4;	   	//Full MIC buffer length (byte), Wrap around
+    // FIXME:
+    // 2 or 4?
+    sPDMA.i32ByteCnt = AUDIOBUFFERSIZE * 4;	   	//Full MIC buffer length (byte), Wrap around
     DrvPDMA_Open(eDRVPDMA_CHANNEL_1, &sPDMA);
 
     // PDMA Setting
@@ -133,39 +130,6 @@ void PDMA1forDPWM(void)
     DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_WAR, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );     //For Wrap
     //DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );
     DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_1);
-
-
-#else
-	STR_PDMA_T sPDMA;
-
-	sPDMA.sSrcAddr.u32Addr 			= BufferReadyAddr;
-	sPDMA.sDestAddr.u32Addr 		= (uint32_t)&DPWM->FIFO;
-	sPDMA.u8Mode 					= eDRVPDMA_MODE_MEM2APB;;
-	sPDMA.u8TransWidth 				= eDRVPDMA_WIDTH_16BITS;
-	sPDMA.sSrcAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_INCREMENTED;
-	sPDMA.sDestAddr.eAddrDirection 	= eDRVPDMA_DIRECTION_FIXED;
-	//sPDMA.u8WrapBcr				 	= 0x5; 		//Interrupt condition set fro Half buffer & buffer end
-    sPDMA.i32ByteCnt = AudioBufferSize * 2;	   	//Full MIC buffer length (byte)
-    DrvPDMA_Open(eDRVPDMA_CHANNEL_1, &sPDMA);
-
-	// PDMA Setting
-    //PDMA_GCR->PDSSR.ADC_RXSEL = eDRVPDMA_CHANNEL_2;
-	DrvPDMA_SetCHForAPBDevice(
-    	eDRVPDMA_CHANNEL_1,
-    	eDRVPDMA_DPWM,
-    	eDRVPDMA_WRITE_APB
-	);
-
-	// Enable DPWM DMA
-	DrvDPWM_EnablePDMA();
-	// Enable INT
-	DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD );
-	// Install Callback function
-	DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_1, eDRVPDMA_BLKD, (PFN_DRVPDMA_CALLBACK) PDMA1_Callback );
-	DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_1);
-
-	PDMA1Done=FALSE;
-#endif
 }
 
 
@@ -185,45 +149,9 @@ void PDMA1_Callback()
         BufferEmptyAddr=(uint32_t) &AudioBuffer[1][0];
     }
 
-
 	PDMA1CallBackCount++;
-#if 0
-	if (BufferEmpty == FALSE)
-    {
-        PDMA1forDPWM();
-    }
-	else
-	{
-		printf("Late to copy audio data to buffer for PDMA\n");
-		PDMA1Done=TRUE;
-	}
-#endif
 
 	BufferEmpty = TRUE;
-}
-
-
-/*---------------------------------------------------------------------------------------------------------*/
-/* Copy Data from flash to SRAM                                                                            */
-/*---------------------------------------------------------------------------------------------------------*/
-void CopyFlash2RAM(uint32_t *Addr1,uint32_t *Addr2,uint32_t WordCount)
-{
-uint32_t	u32LoopCount;
-	for(u32LoopCount=0;u32LoopCount<WordCount;u32LoopCount++ )
-	{
-		*Addr2++ = *Addr1++;
-	}
-}
-
-void CopySoundData()
-{
-
-	CopyFlash2RAM((uint32_t *)AudioDataAddr,(uint32_t *)BufferEmptyAddr,(AudioBufferSize/2));
-
-	AudioSampleCount=AudioSampleCount+AudioBufferSize;
-	AudioDataAddr=AudioDataAddr+(AudioBufferSize*2);
-	if (AudioSampleCount > TOTAL_PCM_COUNT)
-		PCMPlaying=FALSE;
 }
 
 void CopySdSoundData()
@@ -232,40 +160,17 @@ void CopySdSoundData()
     disk_read (0, (unsigned char *)BufferEmptyAddr, u32DataSector, 2);
     u32DataSector += 2;
 
-    AudioSampleCount = AudioSampleCount + AudioBufferSize;
-    AudioDataAddr = AudioDataAddr + (AudioBufferSize*2);
-#if 0
-    if (AudioSampleCount > TOTAL_PCM_COUNT)
-        PCMPlaying=FALSE;
-#endif
+    AudioSampleCount = AudioSampleCount + AUDIOBUFFERSIZE;
+    AudioDataAddr = AudioDataAddr + (AUDIOBUFFERSIZE * 2);
 }
 
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Play sound initialization                                                                               */
 /*---------------------------------------------------------------------------------------------------------*/
-void PlaySound(uint32_t DataAddr)
-{
-	InitialDPWM(8000);
-	//TOTAL_PCM_COUNT= ((uint32_t)&u32AudioDataEnd-(uint32_t)&u32AudioDataBegin)/2;
-	//TOTAL_PCM_COUNT = PCM_LENGTH;
-	AudioDataAddr = DataAddr;
-	PCMPlaying=TRUE;
-	AudioSampleCount=0;
-	PDMA1CallBackCount=0;
-
-	BufferEmptyAddr= (uint32_t) &AudioBuffer[0][0];
-	CopySoundData();
-	BufferReadyAddr= (uint32_t) &AudioBuffer[0][0];
-	PDMA1forDPWM();
-
-	BufferEmptyAddr= (uint32_t) &AudioBuffer[1][0];
-	BufferEmpty=TRUE;
-}
-
 void PlaySdSound(uint32_t DataSdAddr)
 {
-    InitialDPWM(16000);
+    InitialDPWM(16000);     // Sample rate to match audio data on SD card
 
     AudioDataAddr = DataSdAddr;
     PCMPlaying = TRUE;
@@ -288,13 +193,6 @@ void PlaySdSound(uint32_t DataSdAddr)
 /*---------------------------------------------------------------------------------------------------------*/
 int32_t main (void)
 {
-//	uint8_t u8Option;
-//	int32_t	i32Err;
-//	uint32_t	u32temp;
-
-
-
-
 	UNLOCKREG();
 	SYSCLK->PWRCON.OSC49M_EN = 1;
 	SYSCLK->CLKSEL0.HCLK_S = 0; /* Select HCLK source as 48MHz */
@@ -307,12 +205,12 @@ int32_t main (void)
     DrvTIMER_Init();
 
     printf("+-------------------------------------------------------------------------+\n");
-    printf("|       Playing 8K sampling	PCM										      |\n");
+    printf("|       Playing PCM Raw Data										      |\n");
     printf("+-------------------------------------------------------------------------+\n");
 
-    printf("\n=== Flash audio data To SPK test ===\n");
+    printf("\n=== Test PCM raw data on SD card to SPK ===\n");
 
-    if((DSTATUS)disk_initialize(0)!=0)
+    if ((DSTATUS)disk_initialize(0) != 0)
     {
         goto Error;
     }
@@ -343,25 +241,6 @@ int32_t main (void)
 	AudioDataAddr = BASE_ADDR_ON_SD;
 	PlaySdSound(AudioDataAddr);
 
-#if 0
- 	//printf("===================\n");
-	//printf("  [q] Exit\n");
-	while (PCMPlaying == TRUE)
-	{
-		if (BufferEmpty==TRUE)
-		{
-			CopySoundData();
-			BufferEmpty=FALSE;
-		}
-
-
-		if ((PDMA1Done==TRUE) && (BufferEmpty==FALSE))
-			PDMA1forDPWM();
-
-	}
-
-#else
-
     while (PCMPlaying == TRUE)
     {
         if (BufferEmpty == TRUE)
@@ -370,16 +249,7 @@ int32_t main (void)
             BufferEmpty = FALSE;
         }
         //PlaySdSound(AudioDataAddr);
-
-#if 0
-        if ((PDMA1Done == TRUE) && (BufferEmpty == FALSE))
-        {
-            PDMA1forDPWM();
-        }
-#endif
-
     }
-#endif
 
     while(BufferEmpty==FALSE);			 //Waiting last audio buffer played
 
