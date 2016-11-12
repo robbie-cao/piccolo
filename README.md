@@ -30,6 +30,19 @@ The ISD9160 embeds a CortexTM-M0 core running up to 50 MHz with 145K-byte of non
 
 > http://www.digikey.no/en/articles/techzone/2014/dec/application-specific-mcus-targeting-emerging-applications
 
+### SD Card Connection
+
+Card Slot | Dev Board
+---       | ---
+GND       | GND
+VCC       | VCC
+CS        | PA.2
+CLK       | PA.1
+MOSI      | PA.0
+MISO      | PA.3
+
+**Attention: REMOVE SPI FLASH ON DEV BOARD FIRST**
+
 ## Setup
 
 ![](Docs/isd9160_dev_flow.png)
