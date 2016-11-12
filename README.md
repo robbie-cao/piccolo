@@ -62,6 +62,9 @@ The ISD9160 embeds a CortexTM-M0 core running up to 50 MHz with 145K-byte of non
 
 - Log trace with `printf`
   * To output log into UART, remove **SEMIHOST** define in **Project -> Options for Target -> C/C++ -> Preprocessor Symbols**
+
+    UART0: TX - PIN PA.8 , RX - PIN PA.9
+
   * With **SEMIHOST** defined, check log in Keil MDK in debug mode at **View -> Serial Windows -> UART #1**
 
 ## Help Tools
