@@ -143,7 +143,7 @@ void CopySoundData(uint32_t TotalPCMCount)
 /*---------------------------------------------------------------------------------------------------------*/
 void PlaySound(uint32_t DataAddr, uint32_t TotalPCMCount)
 {
-    InitialDPWM(8000);
+    InitialDPWM(16000);
     AudioDataAddr        = DataAddr;
     bPCMPlaying          = TRUE;
     u8LastTwoBufferCount = 0xFF;

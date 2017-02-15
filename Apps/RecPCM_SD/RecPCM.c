@@ -177,12 +177,12 @@ void InitialADC(void)
 
     /* Open ADC block */
     sParam.u8AdcDivisor      = 0;
-    //sParam.u8SDAdcDivisor  = 16;   // OSR64  :16 for 48K
-    //sParam.u8SDAdcDivisor  = 16;   // OSR128 :48 for 8K, 24 for 16K
-    sParam.u8SDAdcDivisor    = 32;     // OSR192 :32 for 8K, 16 for 16K
-    //sParam.eOSR            = eDRVADC_OSR_128;
-    sParam.eOSR              = eDRVADC_OSR_192;
     //sParam.eOSR            = eDRVADC_OSR_64;
+    //sParam.u8SDAdcDivisor  = 16;      // OSR64  :16 for 48K
+    //sParam.eOSR            = eDRVADC_OSR_128;
+    //sParam.u8SDAdcDivisor  = 16;      // OSR128 :48 for 8K, 24 for 16K
+    sParam.eOSR              = eDRVADC_OSR_192;
+    sParam.u8SDAdcDivisor    = 16;      // OSR192 :32 for 8K, 16 for 16K
     sParam.eInputSrc         = eDRVADC_MIC;
     sParam.eInputMode        = eDRVADC_DIFFERENTIAL;
     sParam.u8ADCFifoIntLevel = 7;
