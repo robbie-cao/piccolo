@@ -26,12 +26,12 @@ void Record2DataFlash(uint32_t RecordAddr, uint32_t TotalPCMCount);
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define global variables                                                                                 */
 /*---------------------------------------------------------------------------------------------------------*/
-#define SECTORSIZE          0x1000      //4KB/sector
-#define BUFFER_SAMPLECOUNT  0x50        //256 samples
+#define SECTORSIZE          0x1000      // 4KB/sector
+#define BUFFER_SAMPLECOUNT  0x50        // 256 samples
 
 
 volatile uint32_t CallbackCounter;
-volatile BOOL   bMicBufferReady;
+volatile BOOL     bMicBufferReady;
 
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -58,30 +58,29 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
     UNLOCKREG();
 
     CallbackCounter = 0;
-    bMicBufferReady=FALSE;
+    bMicBufferReady = FALSE;
     FlashRecordAddr = RecordStartAddr;
-    u32TempAddr0= (uint32_t)&MicBuffer[0][0];
-    u32TempAddr1= (uint32_t)&MicBuffer[1][0];
+    u32TempAddr0    = (uint32_t)&MicBuffer[0][0];
+    u32TempAddr1    = (uint32_t)&MicBuffer[1][0];
 
     PDMA0forMIC(u32TempAddr0);
 
 
-    while (CallbackCounter <= (TotalPCMCount/BUFFER_SAMPLECOUNT))
+    while (CallbackCounter <= (TotalPCMCount / BUFFER_SAMPLECOUNT))
     {
-        if (bMicBufferReady==TRUE)
+        if (bMicBufferReady == TRUE)
         {
-            bMicBufferReady=FALSE;
-            if((CallbackCounter & 1)==1)
-                DataReadyAddr= u32TempAddr0;
-            else
-                DataReadyAddr= u32TempAddr1;
+            bMicBufferReady = FALSE;
+            if ((CallbackCounter & 1) == 1) {
+                DataReadyAddr = u32TempAddr0;
+            } else {
+                DataReadyAddr = u32TempAddr1;
+            }
 
-            //Write ready buffer data
+            // Write ready buffer data
             sflash_write(&g_SPIFLASH, FlashRecordAddr, (unsigned long *) DataReadyAddr, (BUFFER_SAMPLECOUNT*2));
 
-
             FlashRecordAddr = FlashRecordAddr +  (BUFFER_SAMPLECOUNT * 2);
-
         }   //end of if(RecordDataReady==0)
     }
 
@@ -90,12 +89,9 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
 
     UNLOCKREG();
 
-
     //printf("Recording Done\n");
 
-
     /* Lock protected registers */
-
 }
 
 
@@ -107,7 +103,7 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
 void PDMA0_Callback()
 {
     CallbackCounter++;
-    bMicBufferReady=TRUE;
+    bMicBufferReady = TRUE;
 }
 
 
@@ -123,10 +119,13 @@ void InitialADC(void)
 
     // b0,b1,b2,a1,a2,b0,b1,b2,a1,a2,b0,b1,b2,a1,a2
     /*
-       uint32_t u32BiqCoeff[15]={0x10000, 0x15b8a, 0x10000, 0x15068, 0x0ef98,
-       0x10000, 0x00000, 0x00000, 0x00000, 0x00000,
-       0x10000, 0x00000, 0x00000, 0x00000, 0x00000};
-       */
+    uint32_t u32BiqCoeff[15] =
+    {
+        0x10000, 0x15b8a, 0x10000, 0x15068, 0x0ef98,
+        0x10000, 0x00000, 0x00000, 0x00000, 0x00000,
+        0x10000, 0x00000, 0x00000, 0x00000, 0x00000
+    };
+    */
 
     /* Open Analog block */
     //DrvADC_AnaOpen();
@@ -148,8 +147,7 @@ void InitialADC(void)
             eDRVADC_REF_SEL_VMID,
             eDRVADC_PU_PGA_ON,
             eDRVADC_PU_BOOST_ON,
-            //eDRVADC_BOOSTGAIN_0DB);
-        eDRVADC_BOOSTGAIN_26DB);
+            eDRVADC_BOOSTGAIN_26DB);
 
     DrvADC_SetPGAGaindB(1600);
 
@@ -186,23 +184,22 @@ void InitialADC(void)
     sParam.eInputMode = eDRVADC_DIFFERENTIAL;
     sParam.u8ADCFifoIntLevel = 7;
     u32AdcStatus=DrvADC_Open(&sParam);
-    if(u32AdcStatus == E_SUCCESS) {
+    if (u32AdcStatus == E_SUCCESS) {
         //printf("ADC has been successfully opened.\n");
         //printf("ADC clock divisor=%d\n",SYSCLK->CLKDIV.ADC_N);
         //printf("ADC over sampling clock divisor=%d\n",SDADC->CLK_DIV);
-        switch(SDADC->DEC.OSR)
+        switch (SDADC->DEC.OSR)
         {
-            case eDRVADC_OSR_64:OSR=64;break;
-            case eDRVADC_OSR_128:OSR=128;break;
-            case eDRVADC_OSR_192:OSR=192;break;
-            case eDRVADC_OSR_384:OSR=384;break;
+            case eDRVADC_OSR_64  : OSR=64;  break;
+            case eDRVADC_OSR_128 : OSR=128; break;
+            case eDRVADC_OSR_192 : OSR=192; break;
+            case eDRVADC_OSR_384 : OSR=384; break;
         }
         //printf("ADC over sampling ratio=%d\n", OSR);
         //printf("Select microphone path as differential input\n");
         //printf("ADC Fifo Interrupt Level=%d\n", SDADC->INT.FIFO_IE_LEV);
         //printf("Conversion rate: %d samples/second\n", DrvADC_GetConversionRate());
-    }
-    else {
+    } else {
         //printf("ADC Open failed!\n");
     }
     /* Change Decimation and FIFO Setting */

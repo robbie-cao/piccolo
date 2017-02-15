@@ -56,7 +56,7 @@ void UartInit(void)
 void SysTimerDelay(uint32_t us)
 {
     SysTick->LOAD = us * 49; /* Assume the internal 49MHz RC used */
-    SysTick->VAL  =  (0x00);
+    SysTick->VAL  = (0x00);
     SysTick->CTRL = (1 << SYSTICK_CLKSOURCE) | (1<<SYSTICK_ENABLE);
 
     /* Waiting for down-count to zero */
@@ -111,24 +111,24 @@ void LdoOn(void)
 
 void LcdSignalPrevention(void)
 {
-    DrvGPIO_Open(GPA,14, IO_OUTPUT);
-    DrvGPIO_Open(GPA,15, IO_OUTPUT);
-    DrvGPIO_SetBit(GPA,15);     //Set CS high if jumper J2 & J32 installed
-    DrvGPIO_SetBit(GPA,14);     //Set backlight off
+    DrvGPIO_Open(GPA, 14, IO_OUTPUT);
+    DrvGPIO_Open(GPA, 15, IO_OUTPUT);
+    DrvGPIO_SetBit(GPA, 15);     //Set CS high if jumper J2 & J32 installed
+    DrvGPIO_SetBit(GPA, 14);     //Set backlight off
 }
+
 /*---------------------------------------------------------------------------------------------------------*/
 /*  Main Function                                                                                          */
 /*---------------------------------------------------------------------------------------------------------*/
 int32_t main (void)
 {
-
     int iRet;
 
     UNLOCKREG();
     SYSCLK->PWRCON.OSC49M_EN = 1;
-    SYSCLK->CLKSEL0.HCLK_S = 0;     /* Select HCLK source as 48MHz */
-    SYSCLK->CLKDIV.HCLK_N  = 0;     /* Select no division          */
-    SYSCLK->CLKSEL0.OSCFSel = 0;    /* 1= 32MHz, 0=48MHz */
+    SYSCLK->CLKSEL0.HCLK_S   = 0;     /* Select HCLK source as 48MHz */
+    SYSCLK->CLKDIV.HCLK_N    = 0;     /* Select no division          */
+    SYSCLK->CLKSEL0.OSCFSel  = 0;    /* 1                               = 32MHz, 0 = 48MHz */
 
 
     DrvADC_AnaOpen();
@@ -143,19 +143,19 @@ int32_t main (void)
     LdoOn();
 
     SpiFlashInit();
-    iRet= sflash_getid(&g_SPIFLASH);
+    iRet = sflash_getid(&g_SPIFLASH);
     //printf("\n Device ID %x \n", iRet);
 
     //outpw(0x40030004,0);      //Change SPI divider to 0 for 24MHz, need good PCB layout
-    iRet= sflash_canwrite(&g_SPIFLASH);
+    iRet = sflash_canwrite(&g_SPIFLASH);
 
 
     //printf("\n=== 8K sampling PCM Recording to SPIFlash  ===\n");
-    Record2SPIFlash(RECORD_START_ADDR,MAX_RECORD_COUNT);
+    Record2SPIFlash(RECORD_START_ADDR, MAX_RECORD_COUNT);
 
 
     //printf("\n=== Play PCM from SPIFlash ===\n");
-    PlaySPIFlash(RECORD_START_ADDR,MAX_RECORD_COUNT);
+    PlaySPIFlash(RECORD_START_ADDR, MAX_RECORD_COUNT);
 
     //printf("\n=== Test Done ===\n");
 
@@ -163,7 +163,6 @@ int32_t main (void)
     while(1);
 
     /* Lock protected registers */
-
 }
 
 
