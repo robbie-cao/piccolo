@@ -345,7 +345,7 @@
               <MiscControls></MiscControls>
               <Define>SEMIHOST</Define>
               <Undefine></Undefine>
-              <IncludePath>.\;..\..\SDK\HW;..\..\SDK\CMSIS\CM0\CoreSupport;..\..\SDK\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx;..\..\..\Include;..\..\..\Include\Driver</IncludePath>
+              <IncludePath>.\;..\..\SDK\CMSIS\CM0\CoreSupport;..\..\SDK\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx;..\..\SDK\NuvotonPlatform_Keil\Include;..\..\SDK\NuvotonPlatform_Keil\Include\Driver</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
