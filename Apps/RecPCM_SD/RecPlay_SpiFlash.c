@@ -57,7 +57,7 @@ void SysTimerDelay(uint32_t us)
 {
     SysTick->LOAD = us * 49; /* Assume the internal 49MHz RC used */
     SysTick->VAL  = (0x00);
-    SysTick->CTRL = (1 << SYSTICK_CLKSOURCE) | (1<<SYSTICK_ENABLE);
+    SysTick->CTRL = (1 << SYSTICK_CLKSOURCE) | (1 << SYSTICK_ENABLE);
 
     /* Waiting for down-count to zero */
     while((SysTick->CTRL & (1 << 16)) == 0);
@@ -86,14 +86,14 @@ const SFLASH_CTX g_SPIFLASH =
 
 void SpiFlashInit(void)
 {
-    SYS->GPA_ALT.GPA0             = 1; // MOSI0
-    SYS->GPA_ALT.GPA2             = 1; // SSB0
-    SYS->GPA_ALT.GPA1             = 1; // SCLK
-    SYS->GPA_ALT.GPA3             = 1; // MISO0
+    SYS->GPA_ALT.GPA0      = 1; // MOSI0
+    SYS->GPA_ALT.GPA2      = 1; // SSB0
+    SYS->GPA_ALT.GPA1      = 1; // SCLK
+    SYS->GPA_ALT.GPA3      = 1; // MISO0
 
-    SYSCLK->APBCLK.SPI0_EN        = 1;
-    SYS->IPRSTC2.SPI0_RST         = 1;
-    SYS->IPRSTC2.SPI0_RST         = 0;
+    SYSCLK->APBCLK.SPI0_EN = 1;
+    SYS->IPRSTC2.SPI0_RST  = 1;
+    SYS->IPRSTC2.SPI0_RST  = 0;
 
     // spi flash
     sflash_set(&g_SPIFLASH);
@@ -102,9 +102,9 @@ void SpiFlashInit(void)
 
 void LdoOn(void)
 {
-    SYSCLK->APBCLK.ANA_EN=1;
-    ANA->LDOPD.PD=0;
-    ANA->LDOSET=3;
+    SYSCLK->APBCLK.ANA_EN = 1;
+    ANA->LDOPD.PD = 0;
+    ANA->LDOSET = 3;
 
     SysTimerDelay(500000);
 }

@@ -49,12 +49,12 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
     printf("|       Recroding Start                                                   |\n");
     printf("+-------------------------------------------------------------------------+\n");
 
-    sflash_erase(&g_SPIFLASH, RecordStartAddr, (TotalPCMCount*2));  //Erase unit is 4096B
+    sflash_erase(&g_SPIFLASH, RecordStartAddr, (TotalPCMCount * 2));  // Erase unit is 4096B
 
 
 
-    InitialADC();           //ADC initialization
-    DrvPDMA_Init();         //PDMA initialization
+    InitialADC();           // ADC initialization
+    DrvPDMA_Init();         // PDMA initialization
     UNLOCKREG();
 
     CallbackCounter = 0;
@@ -83,7 +83,7 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
                     (unsigned long *) DataReadyAddr,
                     (BUFFER_SAMPLECOUNT * 2));
 
-            FlashRecordAddr = FlashRecordAddr +  (BUFFER_SAMPLECOUNT * 2);
+            FlashRecordAddr = FlashRecordAddr + (BUFFER_SAMPLECOUNT * 2);
         }   //end of if(RecordDataReady==0)
     }
 
@@ -163,40 +163,40 @@ void InitialADC(void)
 
     /* ALC Setting */
     SYSCLK->APBCLK.BIQALC_EN = 1;
-    ALC->ALC_CTRL.ALCLVL = 6;
-    //ALC->ALC_CTRL.ALCSEL =1;          //ALC enable
-    ALC->ALC_CTRL.ALCSEL =0;            //ALC disable
-    ALC->ALC_CTRL.ALCDCY = 3;
-    ALC->ALC_CTRL.ALCATK = 2;
-    ALC->ALC_CTRL.NGEN =1;
-    ALC->ALC_CTRL.NGTH =7;
+    ALC->ALC_CTRL.ALCLVL     = 6;
+    //ALC->ALC_CTRL.ALCSEL   = 1;           // ALC enable
+    ALC->ALC_CTRL.ALCSEL     = 0;           // ALC disable
+    ALC->ALC_CTRL.ALCDCY     = 3;
+    ALC->ALC_CTRL.ALCATK     = 2;
+    ALC->ALC_CTRL.NGEN       = 1;
+    ALC->ALC_CTRL.NGTH       = 7;
 
     //BIQ->BIQ_CTRL.RSTn = 1;
     //(*((volatile unsigned long*)0x400B0048)) = 0xFF01E360; // target level
 
 
     /* Open ADC block */
-    sParam.u8AdcDivisor   = 0;
-    //sParam.u8SDAdcDivisor = 16;   //OSR64  :16 for 48K
-    //sParam.u8SDAdcDivisor = 16;   //OSR128 :48 for 8K, 24 for 16K
-    sParam.u8SDAdcDivisor = 32;     //OSR192 :32 for 8K, 16 for 16K
-    //sParam.eOSR    = eDRVADC_OSR_128;
-    sParam.eOSR      = eDRVADC_OSR_192;
-    //sParam.eOSR    = eDRVADC_OSR_64;
-    sParam.eInputSrc  = eDRVADC_MIC;
-    sParam.eInputMode = eDRVADC_DIFFERENTIAL;
+    sParam.u8AdcDivisor      = 0;
+    //sParam.u8SDAdcDivisor  = 16;   // OSR64  :16 for 48K
+    //sParam.u8SDAdcDivisor  = 16;   // OSR128 :48 for 8K, 24 for 16K
+    sParam.u8SDAdcDivisor    = 32;     // OSR192 :32 for 8K, 16 for 16K
+    //sParam.eOSR            = eDRVADC_OSR_128;
+    sParam.eOSR              = eDRVADC_OSR_192;
+    //sParam.eOSR            = eDRVADC_OSR_64;
+    sParam.eInputSrc         = eDRVADC_MIC;
+    sParam.eInputMode        = eDRVADC_DIFFERENTIAL;
     sParam.u8ADCFifoIntLevel = 7;
-    u32AdcStatus=DrvADC_Open(&sParam);
+    u32AdcStatus = DrvADC_Open(&sParam);
     if (u32AdcStatus == E_SUCCESS) {
         //printf("ADC has been successfully opened.\n");
         //printf("ADC clock divisor=%d\n",SYSCLK->CLKDIV.ADC_N);
         //printf("ADC over sampling clock divisor=%d\n",SDADC->CLK_DIV);
         switch (SDADC->DEC.OSR)
         {
-            case eDRVADC_OSR_64  : OSR=64;  break;
-            case eDRVADC_OSR_128 : OSR=128; break;
-            case eDRVADC_OSR_192 : OSR=192; break;
-            case eDRVADC_OSR_384 : OSR=384; break;
+            case eDRVADC_OSR_64  : OSR = 64;  break;
+            case eDRVADC_OSR_128 : OSR = 128; break;
+            case eDRVADC_OSR_192 : OSR = 192; break;
+            case eDRVADC_OSR_384 : OSR = 384; break;
         }
         //printf("ADC over sampling ratio=%d\n", OSR);
         //printf("Select microphone path as differential input\n");
@@ -223,14 +223,14 @@ void PDMA0forMIC(uint32_t u32DestAddr)
 {
     STR_PDMA_T sPDMA;
 
-    sPDMA.sSrcAddr.u32Addr         = (uint32_t)&SDADC->ADCOUT;
-    sPDMA.sDestAddr.u32Addr        = u32DestAddr;
-    sPDMA.u8Mode                   = eDRVPDMA_MODE_APB2MEM;
-    sPDMA.u8TransWidth             = eDRVPDMA_WIDTH_16BITS;
-    sPDMA.sSrcAddr.eAddrDirection  = eDRVPDMA_DIRECTION_FIXED;
-    sPDMA.sDestAddr.eAddrDirection = eDRVPDMA_DIRECTION_WRAPAROUND;
-    sPDMA.u8WrapBcr                = eDRVPDMA_WRA_WRAP_HALF_INT;        // Interrupt condition set fro Half buffer & buffer end
-    sPDMA.i32ByteCnt = BUFFER_SAMPLECOUNT * 4;      // Full MIC buffer length (byte)
+    sPDMA.sSrcAddr.u32Addr          = (uint32_t)&SDADC->ADCOUT;
+    sPDMA.sDestAddr.u32Addr         = u32DestAddr;
+    sPDMA.u8Mode                    = eDRVPDMA_MODE_APB2MEM;
+    sPDMA.u8TransWidth              = eDRVPDMA_WIDTH_16BITS;
+    sPDMA.sSrcAddr.eAddrDirection   = eDRVPDMA_DIRECTION_FIXED;
+    sPDMA.sDestAddr.eAddrDirection  = eDRVPDMA_DIRECTION_WRAPAROUND;
+    sPDMA.u8WrapBcr                 = eDRVPDMA_WRA_WRAP_HALF_INT;   // Interrupt condition set fro Half buffer & buffer end
+    sPDMA.i32ByteCnt                = BUFFER_SAMPLECOUNT * 4;       // Full MIC buffer length (byte)
     DrvPDMA_Open(eDRVPDMA_CHANNEL_0, &sPDMA);
 
     // PDMA Setting
