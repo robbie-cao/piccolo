@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>Smpl_Record_Play_SPIFlash</TargetName>
+      <TargetName>Debug</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
@@ -43,7 +43,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\obj\</OutputDirectory>
-          <OutputName>Smpl_Record_4seconds_SpiFlash</OutputName>
+          <OutputName>RecPCM_SD</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -135,7 +135,7 @@
             <RestoreToolbox>1</RestoreToolbox>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>0</TargetSelection>
+          <TargetSelection>11</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -343,9 +343,9 @@
             <uThumb>0</uThumb>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>SEMIHOST</Define>
               <Undefine></Undefine>
-              <IncludePath>.\;..\..\..\..\HW;..\..\..\..\CMSIS\CM0\CoreSupport;..\..\..\..\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx;..\..\..\Include;..\..\..\Include\Driver</IncludePath>
+              <IncludePath>.\;..\..\SDK\HW;..\..\SDK\CMSIS\CM0\CoreSupport;..\..\SDK\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx;..\..\..\Include;..\..\..\Include\Driver</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -388,17 +388,17 @@
             <File>
               <FileName>core_cm0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\CMSIS\CM0\CoreSupport\core_cm0.c</FilePath>
+              <FilePath>..\..\SDK\CMSIS\CM0\CoreSupport\core_cm0.c</FilePath>
             </File>
             <File>
               <FileName>system_ISD9xx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\CMSIS\CM0\DeviceSupport\NUVOTON\ISD91xx\system_ISD9xx.c</FilePath>
+              <FilePath>..\..\SDK\CMSIS\CM0\DeviceSupport\NUVOTON\ISD91xx\system_ISD9xx.c</FilePath>
             </File>
             <File>
               <FileName>startup_ISD91xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx\startup\arm\startup_ISD91xx.s</FilePath>
+              <FilePath>..\..\SDK\CMSIS\CM0\DeviceSupport\Nuvoton\ISD91xx\startup\arm\startup_ISD91xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -406,14 +406,14 @@
           <GroupName>Source files</GroupName>
           <Files>
             <File>
-              <FileName>RecordPCM.c</FileName>
+              <FileName>RecPCM.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\RecordPCM.c</FilePath>
+              <FilePath>.\RecPCM.c</FilePath>
             </File>
             <File>
-              <FileName>Smpl_Record_Play_SPIFlash.c</FileName>
+              <FileName>RecPlay_SPIFlash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Smpl_Record_Play_SPIFlash.c</FilePath>
+              <FilePath>.\RecPlay_SPIFlash.c</FilePath>
             </File>
             <File>
               <FileName>PlayPCM.c</FileName>
@@ -428,52 +428,52 @@
             <File>
               <FileName>retarget.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\retarget.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\retarget.c</FilePath>
             </File>
             <File>
               <FileName>DrvSYS.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvSYS.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvSYS.c</FilePath>
             </File>
             <File>
               <FileName>DrvUART.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvUART.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvUART.c</FilePath>
             </File>
             <File>
               <FileName>DrvADC.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvADC.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvADC.c</FilePath>
             </File>
             <File>
               <FileName>DrvPDMA.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvPDMA.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvPDMA.c</FilePath>
             </File>
             <File>
               <FileName>SemiHost_Keil.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\Lib\SemiHost_Keil.lib</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Lib\SemiHost_Keil.lib</FilePath>
             </File>
             <File>
               <FileName>DrvGPIO.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvGPIO.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvGPIO.c</FilePath>
             </File>
             <File>
               <FileName>DrvDPWM.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvDPWM.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvDPWM.c</FilePath>
             </File>
             <File>
               <FileName>libSPIFlash.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\Lib\libSPIFlash.lib</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Lib\libSPIFlash.lib</FilePath>
             </File>
             <File>
               <FileName>DrvSPI.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Src\Driver\DrvSPI.c</FilePath>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvSPI.c</FilePath>
             </File>
           </Files>
         </Group>
