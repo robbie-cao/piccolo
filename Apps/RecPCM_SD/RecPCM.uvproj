@@ -420,6 +420,11 @@
               <FileType>1</FileType>
               <FilePath>.\PlayPCM.c</FilePath>
             </File>
+            <File>
+              <FileName>SDaccess.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SDaccess.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -464,6 +469,16 @@
               <FileName>DrvDPWM.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvDPWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>DrvTimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvTimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>DrvSDCard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\SDK\NuvotonPlatform_Keil\Src\Driver\DrvSDCard.c</FilePath>
             </File>
             <File>
               <FileName>libSPIFlash.lib</FileName>
