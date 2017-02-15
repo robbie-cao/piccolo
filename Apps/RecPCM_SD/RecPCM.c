@@ -188,9 +188,9 @@ void InitialADC(void)
     sParam.u8ADCFifoIntLevel = 7;
     u32AdcStatus = DrvADC_Open(&sParam);
     if (u32AdcStatus == E_SUCCESS) {
-        //printf("ADC has been successfully opened.\n");
-        //printf("ADC clock divisor=%d\n",SYSCLK->CLKDIV.ADC_N);
-        //printf("ADC over sampling clock divisor=%d\n",SDADC->CLK_DIV);
+        printf("ADC has been successfully opened.\n");
+        printf("ADC clock divisor=%d\n",SYSCLK->CLKDIV.ADC_N);
+        printf("ADC over sampling clock divisor=%d\n",SDADC->CLK_DIV);
         switch (SDADC->DEC.OSR)
         {
             case eDRVADC_OSR_64  : OSR = 64;  break;
@@ -198,12 +198,12 @@ void InitialADC(void)
             case eDRVADC_OSR_192 : OSR = 192; break;
             case eDRVADC_OSR_384 : OSR = 384; break;
         }
-        //printf("ADC over sampling ratio=%d\n", OSR);
-        //printf("Select microphone path as differential input\n");
-        //printf("ADC Fifo Interrupt Level=%d\n", SDADC->INT.FIFO_IE_LEV);
-        //printf("Conversion rate: %d samples/second\n", DrvADC_GetConversionRate());
+        printf("ADC over sampling ratio=%d\n", OSR);
+        printf("Select microphone path as differential input\n");
+        printf("ADC Fifo Interrupt Level=%d\n", SDADC->INT.FIFO_IE_LEV);
+        printf("Conversion rate: %d samples/second\n", DrvADC_GetConversionRate());
     } else {
-        //printf("ADC Open failed!\n");
+        printf("ADC Open failed!\n");
     }
     /* Change Decimation and FIFO Setting */
     //DrvADC_SetAdcOverSamplingClockDivisor(u8SDAdcDivisor);

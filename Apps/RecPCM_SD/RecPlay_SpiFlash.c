@@ -8,7 +8,7 @@
 #include "Driver\DrvUART.h"
 #include "Driver\DrvSYS.h"
 #include "Driver\DrvGPIO.h"
-//#include "Driver\DrvADC.h"
+#include "Driver\DrvADC.h"
 
 #include "Lib\libSPIFlash.h"
 
@@ -25,8 +25,8 @@ void PlaySPIFlash(uint32_t PlayStartAddr,uint32_t TotalPCMCount);
 /* Define global variables                                                                                 */
 /*---------------------------------------------------------------------------------------------------------*/
 
-#define RECORD_START_ADDR       0x20000         //0x20000 = 128KB, need 4K aligned for first address of a sector
-#define MAX_RECORD_COUNT        10 * 8 * 1024   //maximum sampling points in each recording, should be multiple of 1024
+#define RECORD_START_ADDR       0x20000         // 0x20000 = 128KB, need 4K aligned for first address of a sector
+#define MAX_RECORD_COUNT        (10 * 8 * 1024) // maximum sampling points in each recording, should be multiple of 1024
 
 
 
@@ -113,8 +113,8 @@ void LcdSignalPrevention(void)
 {
     DrvGPIO_Open(GPA, 14, IO_OUTPUT);
     DrvGPIO_Open(GPA, 15, IO_OUTPUT);
-    DrvGPIO_SetBit(GPA, 15);     //Set CS high if jumper J2 & J32 installed
-    DrvGPIO_SetBit(GPA, 14);     //Set backlight off
+    DrvGPIO_SetBit(GPA, 15);     // Set CS high if jumper J2 & J32 installed
+    DrvGPIO_SetBit(GPA, 14);     // Set backlight off
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -126,15 +126,15 @@ int32_t main (void)
 
     UNLOCKREG();
     SYSCLK->PWRCON.OSC49M_EN = 1;
-    SYSCLK->CLKSEL0.HCLK_S   = 0;     /* Select HCLK source as 48MHz */
-    SYSCLK->CLKDIV.HCLK_N    = 0;     /* Select no division          */
-    SYSCLK->CLKSEL0.OSCFSel  = 0;    /* 1                               = 32MHz, 0 = 48MHz */
+    SYSCLK->CLKSEL0.HCLK_S   = 0;       /* Select HCLK source as 48MHz */
+    SYSCLK->CLKDIV.HCLK_N    = 0;       /* Select no division          */
+    SYSCLK->CLKSEL0.OSCFSel  = 0;       /* 1 = 32MHz, 0 = 48MHz        */
 
 
     DrvADC_AnaOpen();
 
     /* Set UART Configuration */
-    //UartInit();
+    UartInit();
 
     //LcdSignalPrevention();
     //--------------------------------------------//
@@ -144,20 +144,20 @@ int32_t main (void)
 
     SpiFlashInit();
     iRet = sflash_getid(&g_SPIFLASH);
-    //printf("\n Device ID %x \n", iRet);
+    printf("\n Device ID %x \n", iRet);
 
     //outpw(0x40030004,0);      //Change SPI divider to 0 for 24MHz, need good PCB layout
     iRet = sflash_canwrite(&g_SPIFLASH);
 
 
-    //printf("\n=== 8K sampling PCM Recording to SPIFlash  ===\n");
+    printf("\n=== 8K sampling PCM Recording to SPIFlash  ===\n");
     Record2SPIFlash(RECORD_START_ADDR, MAX_RECORD_COUNT);
 
 
-    //printf("\n=== Play PCM from SPIFlash ===\n");
+    printf("\n=== Play PCM from SPIFlash ===\n");
     PlaySPIFlash(RECORD_START_ADDR, MAX_RECORD_COUNT);
 
-    //printf("\n=== Test Done ===\n");
+    printf("\n=== Test Done ===\n");
 
 
     while(1);
