@@ -10,7 +10,7 @@
 #include "Driver\DrvGPIO.h"
 #include "Driver\DrvADC.h"
 
-#include "Lib\libSPIFlash.h"
+#include "SDaccess.h"
 
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -25,8 +25,8 @@ void PlaySPIFlash(uint32_t PlayStartAddr,uint32_t TotalPCMCount);
 /* Define global variables                                                                                 */
 /*---------------------------------------------------------------------------------------------------------*/
 
-#define RECORD_START_ADDR       0x20000         // 0x20000 = 128KB, need 4K aligned for first address of a sector
-#define MAX_RECORD_COUNT        (10 * 8 * 1024) // maximum sampling points in each recording, should be multiple of 1024
+#define RECORD_START_ADDR       0x00000         // 0x20000 = 128KB, need 4K aligned for first address of a sector
+#define MAX_RECORD_COUNT        (10 * 8 * 1024) // Maximum sampling points in each recording, should be multiple of 1024
 
 
 
@@ -61,42 +61,6 @@ void SysTimerDelay(uint32_t us)
 
     /* Waiting for down-count to zero */
     while((SysTick->CTRL & (1 << 16)) == 0);
-}
-
-
-//====================================
-// SPI-flash Base and initialization
-#ifndef SPI0_BASE
-#define SPI0_BASE (0x40000000 + 0x30000)
-#endif // SPI0_BASE
-
-static void spi_setcs(const struct tagSFLASH_CTX *ctx, int csOn)
-{
-    // use the SPI controller's CS control
-}
-
-const SFLASH_CTX g_SPIFLASH =
-{
-    SPI0_BASE,
-    1, // channel 0, auto
-    spi_setcs
-};
-
-#define SPIFLASH_CTX(arg) (&g_SPIFLASH)
-
-void SpiFlashInit(void)
-{
-    SYS->GPA_ALT.GPA0      = 1; // MOSI0
-    SYS->GPA_ALT.GPA2      = 1; // SSB0
-    SYS->GPA_ALT.GPA1      = 1; // SCLK
-    SYS->GPA_ALT.GPA3      = 1; // MISO0
-
-    SYSCLK->APBCLK.SPI0_EN = 1;
-    SYS->IPRSTC2.SPI0_RST  = 1;
-    SYS->IPRSTC2.SPI0_RST  = 0;
-
-    // spi flash
-    sflash_set(&g_SPIFLASH);
 }
 
 
@@ -138,28 +102,36 @@ int32_t main (void)
 
     //LcdSignalPrevention();
     //--------------------------------------------//
-    // Initial SPI-flash interface
 
+    printf("\n=== Start ===\n");
     LdoOn();
 
-    SpiFlashInit();
-    iRet = sflash_getid(&g_SPIFLASH);
-    printf("\n Device ID %x \n", iRet);
+    // Initial SD Card
+    printf("\n=== Init SD Card ===\n");
+    if ((DSTATUS)disk_initialize(0) != 0)
+    {
+        goto Error;
+    }
 
+#if 0
     //outpw(0x40030004,0);      //Change SPI divider to 0 for 24MHz, need good PCB layout
     iRet = sflash_canwrite(&g_SPIFLASH);
+#endif
 
 
-    printf("\n=== 8K sampling PCM Recording to SPIFlash  ===\n");
+    printf("\n=== Sampling PCM Recording to SD Card ===\n");
     Record2SPIFlash(RECORD_START_ADDR, MAX_RECORD_COUNT);
 
 
-    printf("\n=== Play PCM from SPIFlash ===\n");
+    printf("\n=== Play PCM from SD Card ===\n");
     PlaySPIFlash(RECORD_START_ADDR, MAX_RECORD_COUNT);
 
     printf("\n=== Test Done ===\n");
+    while(1);
 
 
+Error:
+    printf(" SD card Initialization fial\n");
     while(1);
 
     /* Lock protected registers */

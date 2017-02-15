@@ -10,9 +10,7 @@
 #include "Driver\DrvALC.h"
 #include "Driver\DrvGPIO.h"
 
-
-#include "Lib\libSPIFlash.h"
-extern const SFLASH_CTX g_SPIFLASH;
+#include "SDaccess.h"
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define Function Prototypes                                                                              */
@@ -41,6 +39,7 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
 {
     uint32_t u32TempAddr0, u32TempAddr1;
     uint32_t DataReadyAddr, FlashRecordAddr;
+    uint32_t u32DataSector = 0;
 
     __align(4) int16_t MicBuffer[2][BUFFER_SAMPLECOUNT];
 
@@ -48,10 +47,6 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
     printf("+-------------------------------------------------------------------------+\n");
     printf("|       Recroding Start                                                   |\n");
     printf("+-------------------------------------------------------------------------+\n");
-
-    sflash_erase(&g_SPIFLASH, RecordStartAddr, (TotalPCMCount * 2));  // Erase unit is 4096B
-
-
 
     InitialADC();           // ADC initialization
     DrvPDMA_Init();         // PDMA initialization
@@ -78,10 +73,8 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
             }
 
             // Write ready buffer data
-            sflash_write(&g_SPIFLASH,
-                    FlashRecordAddr,
-                    (unsigned long *) DataReadyAddr,
-                    (BUFFER_SAMPLECOUNT * 2));
+            disk_write(0, (unsigned char *)DataReadyAddr, u32DataSector, 1);
+            u32DataSector += 1;
 
             FlashRecordAddr = FlashRecordAddr + (BUFFER_SAMPLECOUNT * 2);
         }   //end of if(RecordDataReady==0)

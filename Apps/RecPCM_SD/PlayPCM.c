@@ -8,18 +8,16 @@
 #include "Driver\DrvPDMA.h"
 #include "Driver\DrvDPWM.h"
 
-
-#include "Lib\libSPIFlash.h"
-extern const SFLASH_CTX g_SPIFLASH;
-
+#include "SDaccess.h"
 
 //--------------------
 // Buffer and global variables for playing
-#define AUDIOBUFFERSIZE     0x100
+#define AUDIOBUFFERSIZE     0x100       // 256 samples
 uint32_t    u32BufferAddr0, u32BufferAddr1;
 volatile uint32_t AudioSampleCount, PDMA1CallBackCount, AudioDataAddr, BufferEmptyAddr, BufferReadyAddr;
 BOOL        bPCMPlaying, bBufferEmpty, PDMA1Done;
 uint8_t     u8LastTwoBufferCount;
+uint32_t	AudioDataCount,u32DataSector = 0;
 
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -120,15 +118,14 @@ void PDMA1_Callback()
 
 
 /*---------------------------------------------------------------------------------------------------------*/
-/* Copy Data from SPI flash to SRAM                                                                            */
+/* Copy Data from SD Card to SRAM                                                                            */
 /*---------------------------------------------------------------------------------------------------------*/
 void CopySoundData(uint32_t TotalPCMCount)
 {
-    // Read SPI-flash data to empty buffer
-    sflash_read(&g_SPIFLASH,
-            AudioDataAddr,
-            (unsigned long *)BufferEmptyAddr,
-            (AUDIOBUFFERSIZE * 2));
+    // Read data to empty buffer from SD card
+    //u32DataSector = AudioDataAddr / SD_SECTOR_SIZE;
+    disk_read (0, (unsigned char *)BufferEmptyAddr, u32DataSector, 1);
+    u32DataSector += 1;
 
     AudioSampleCount = AudioSampleCount + AUDIOBUFFERSIZE;
     AudioDataAddr = AudioDataAddr + (AUDIOBUFFERSIZE * 2);
@@ -174,9 +171,9 @@ void PlaySPIFlash(uint32_t PlayStartAddr, uint32_t TotalPCMCount)
     u32BufferAddr0 = (uint32_t) &AudioBuffer[0][0];
     u32BufferAddr1 = (uint32_t) &AudioBuffer[1][0];
 
-    //printf("+-------------------------------------------------------------------------+\n");
-    //printf("|       Playing 8K Sampling PCM Start                                     |\n");
-    //printf("+-------------------------------------------------------------------------+\n");
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|       Playing Sampling PCM Start                                        |\n");
+    printf("+-------------------------------------------------------------------------+\n");
 
 
     DrvPDMA_Init();         // PDMA initialization
@@ -206,7 +203,7 @@ void PlaySPIFlash(uint32_t PlayStartAddr, uint32_t TotalPCMCount)
     DrvDPWM_Close();
     UNLOCKREG();
 
-    //printf("Play Done\n");
+    printf("Play Done\n");
 
     /* Lock protected registers */
 }

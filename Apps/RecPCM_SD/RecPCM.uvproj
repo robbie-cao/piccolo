@@ -411,9 +411,9 @@
               <FilePath>.\RecPCM.c</FilePath>
             </File>
             <File>
-              <FileName>RecPlay_SPIFlash.c</FileName>
+              <FileName>RecPlay.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\RecPlay_SPIFlash.c</FilePath>
+              <FilePath>.\RecPlay.c</FilePath>
             </File>
             <File>
               <FileName>PlayPCM.c</FileName>
