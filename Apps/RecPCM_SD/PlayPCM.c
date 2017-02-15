@@ -15,7 +15,7 @@ extern const SFLASH_CTX g_SPIFLASH;
 
 //--------------------
 // Buffer and global variables for playing
-#define AUDIOBUFFERSIZE     0x50
+#define AUDIOBUFFERSIZE     0x100
 uint32_t    u32BufferAddr0, u32BufferAddr1;
 volatile uint32_t AudioSampleCount, PDMA1CallBackCount, AudioDataAddr, BufferEmptyAddr, BufferReadyAddr;
 BOOL        bPCMPlaying, bBufferEmpty, PDMA1Done;

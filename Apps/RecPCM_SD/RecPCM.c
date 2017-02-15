@@ -27,7 +27,7 @@ void Record2DataFlash(uint32_t RecordAddr, uint32_t TotalPCMCount);
 /* Define global variables                                                                                 */
 /*---------------------------------------------------------------------------------------------------------*/
 #define SECTORSIZE          0x1000      // 4KB/sector
-#define BUFFER_SAMPLECOUNT  0x50        // 256 samples
+#define BUFFER_SAMPLECOUNT  0x100       // 256 samples
 
 
 volatile uint32_t CallbackCounter;
