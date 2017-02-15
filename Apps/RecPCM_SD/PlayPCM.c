@@ -124,8 +124,11 @@ void PDMA1_Callback()
 /*---------------------------------------------------------------------------------------------------------*/
 void CopySoundData(uint32_t TotalPCMCount)
 {
-
-    sflash_read(&g_SPIFLASH, AudioDataAddr, (unsigned long *)BufferEmptyAddr, (AUDIOBUFFERSIZE * 2));		 // Read SPI-flash data to empty buffer
+    // Read SPI-flash data to empty buffer
+    sflash_read(&g_SPIFLASH,
+            AudioDataAddr,
+            (unsigned long *)BufferEmptyAddr,
+            (AUDIOBUFFERSIZE * 2));
 
     AudioSampleCount = AudioSampleCount + AUDIOBUFFERSIZE;
     AudioDataAddr = AudioDataAddr + (AUDIOBUFFERSIZE * 2);
@@ -141,11 +144,11 @@ void CopySoundData(uint32_t TotalPCMCount)
 void PlaySound(uint32_t DataAddr, uint32_t TotalPCMCount)
 {
     InitialDPWM(8000);
-    AudioDataAddr = DataAddr;
-    bPCMPlaying = TRUE;
+    AudioDataAddr        = DataAddr;
+    bPCMPlaying          = TRUE;
     u8LastTwoBufferCount = 0xFF;
-    AudioSampleCount = 0;
-    PDMA1CallBackCount = 0;
+    AudioSampleCount     = 0;
+    PDMA1CallBackCount   = 0;
 
     BufferEmptyAddr = u32BufferAddr0;
     CopySoundData(TotalPCMCount);
@@ -197,7 +200,7 @@ void PlaySPIFlash(uint32_t PlayStartAddr, uint32_t TotalPCMCount)
 
     }
 
-    //while(bBufferEmpty==FALSE);           // Waiting last audio buffer played
+    //while (bBufferEmpty == FALSE);           // Waiting last audio buffer played
 
     DrvPDMA_Close();
     DrvDPWM_Close();
@@ -206,7 +209,6 @@ void PlaySPIFlash(uint32_t PlayStartAddr, uint32_t TotalPCMCount)
     //printf("Play Done\n");
 
     /* Lock protected registers */
-
 }
 
 

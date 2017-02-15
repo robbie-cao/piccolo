@@ -39,8 +39,8 @@ volatile BOOL     bMicBufferReady;
 /*---------------------------------------------------------------------------------------------------------*/
 void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
 {
-    uint32_t u32TempAddr0,u32TempAddr1;
-    uint32_t DataReadyAddr,FlashRecordAddr;
+    uint32_t u32TempAddr0, u32TempAddr1;
+    uint32_t DataReadyAddr, FlashRecordAddr;
 
     __align(4) int16_t MicBuffer[2][BUFFER_SAMPLECOUNT];
 
@@ -78,7 +78,10 @@ void Record2SPIFlash(uint32_t RecordStartAddr, uint32_t TotalPCMCount)
             }
 
             // Write ready buffer data
-            sflash_write(&g_SPIFLASH, FlashRecordAddr, (unsigned long *) DataReadyAddr, (BUFFER_SAMPLECOUNT*2));
+            sflash_write(&g_SPIFLASH,
+                    FlashRecordAddr,
+                    (unsigned long *) DataReadyAddr,
+                    (BUFFER_SAMPLECOUNT * 2));
 
             FlashRecordAddr = FlashRecordAddr +  (BUFFER_SAMPLECOUNT * 2);
         }   //end of if(RecordDataReady==0)
@@ -226,8 +229,8 @@ void PDMA0forMIC(uint32_t u32DestAddr)
     sPDMA.u8TransWidth             = eDRVPDMA_WIDTH_16BITS;
     sPDMA.sSrcAddr.eAddrDirection  = eDRVPDMA_DIRECTION_FIXED;
     sPDMA.sDestAddr.eAddrDirection = eDRVPDMA_DIRECTION_WRAPAROUND;
-    sPDMA.u8WrapBcr                = eDRVPDMA_WRA_WRAP_HALF_INT;        //Interrupt condition set fro Half buffer & buffer end
-    sPDMA.i32ByteCnt = BUFFER_SAMPLECOUNT * 4;      //Full MIC buffer length (byte)
+    sPDMA.u8WrapBcr                = eDRVPDMA_WRA_WRAP_HALF_INT;        // Interrupt condition set fro Half buffer & buffer end
+    sPDMA.i32ByteCnt = BUFFER_SAMPLECOUNT * 4;      // Full MIC buffer length (byte)
     DrvPDMA_Open(eDRVPDMA_CHANNEL_0, &sPDMA);
 
     // PDMA Setting
@@ -238,9 +241,11 @@ void PDMA0forMIC(uint32_t u32DestAddr)
             eDRVPDMA_READ_APB
             );
 
-    DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_0, eDRVPDMA_WAR );       //Enable INT
-    DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_0, eDRVPDMA_WAR, (PFN_DRVPDMA_CALLBACK) PDMA0_Callback );      //Callback registration
-    DrvADC_PdmaEnable();        // Enable ADC PDMA and Trigger PDMA specified Channel
-    DrvADC_StartConvert();      // Start A/D conversion
-    DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_0);  // start ADC PDMA transfer
+    DrvPDMA_EnableInt(eDRVPDMA_CHANNEL_0, eDRVPDMA_WAR);    // Enable INT
+    DrvPDMA_InstallCallBack(eDRVPDMA_CHANNEL_0,
+            eDRVPDMA_WAR,
+            (PFN_DRVPDMA_CALLBACK) PDMA0_Callback);         // Callback registration
+    DrvADC_PdmaEnable();                                    // Enable ADC PDMA and Trigger PDMA specified Channel
+    DrvADC_StartConvert();                                  // Start A/D conversion
+    DrvPDMA_CHEnablelTransfer(eDRVPDMA_CHANNEL_0);          // Start ADC PDMA transfer
 }
