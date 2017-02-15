@@ -52,8 +52,10 @@ int32_t main(void)
 {
     InitialSystemClock();
 
+#ifdef OSAL
     /* Initialize the operating system */
     osal_init_system();
+#endif
 
     InitialUART();
     InitialI2C();
@@ -88,8 +90,10 @@ int32_t main(void)
     osal_pwrmgr_device( PWRMGR_BATTERY );
 #endif
 
+#ifdef OSAL
     /* Start OSAL */
     osal_start_system(); // No Return from here
+#endif
 
     return 0;
 }
